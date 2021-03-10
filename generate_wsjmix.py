@@ -9,10 +9,10 @@ FS_ORIG = 16000
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--wsj0_path", default="../")
-parser.add_argument("-o", "--output_folder", default="simulated_data")
-parser.add_argument("-n", "--n_src", default=4, type=int)
+parser.add_argument("-o", "--output_folder", default="wsj0-mix")
+parser.add_argument("-n", "--n_src", default=2, type=int)
 parser.add_argument("-sr", "--samplerate", default=8000, type=int)
-parser.add_argument("--len_mode", nargs="+", type=list, default=["min", "max"])
+parser.add_argument("--len_mode", nargs="+", type=str, default=["min", "max"])
 args = parser.parse_args()
 
 # Read activlev file. Build {utt_id: activlev} dict
@@ -25,7 +25,7 @@ activlev_dic = dict(zip(list(activlev_df.utt), list(activlev_df.alev)))
 
 for cond in ["tr", "cv", "tt"]:
     # Output folders (wav8k-16k/min-max/tr-cv-tt/mix-src{i})
-    base = Path(args.output_folder) / f"{args.n_src}speakers" / f"wav{args.samplerate // 1000}"
+    base = Path(args.output_folder) / f"{args.n_src}speakers" / f"wav{args.samplerate // 1000}k"
     min_mix_folder =  base / "min"/  cond / "mix"
     min_src_folders = [base / "min"/ cond /  f"s{i+1}" for i in range(args.n_src)]
     max_mix_folder =  base / "max"/  cond / "mix"
