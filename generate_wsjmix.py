@@ -47,7 +47,7 @@ for cond in ["tr", "cv", "tt"]:
 
         activlev_scales = [activlev_dic[mix_df[f"s_{i}"][idx].split("/")[-1].replace(".wav", "")] for i in range(args.n_src)]
         # activlev_scales = [np.sqrt(np.mean(s**2)) for s in resampled_sources]  # If no activlev file
-        scaled_sources = [s / scale * 10 ** (x/20) for s, scale, x in zip(padded_sources, activlev_scales, snrs)]
+        scaled_sources = [s / np.sqrt(scale) * 10 ** (x/20) for s, scale, x in zip(padded_sources, activlev_scales, snrs)]
 
         sources_np = np.stack(scaled_sources, axis=0)
         mix_np = np.sum(sources_np, axis=0)
