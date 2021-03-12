@@ -56,8 +56,9 @@ for cond in ["tr", "cv", "tt"]:
         mix_np /= gain
         sources_np /= gain
 
-        # Merge filenames for mixture name.
-        pp = lambda x: x.split('/')[-1].replace(".wav", "") if isinstance(x, str) else str(round(x, 4))
+        # Merge filenames for mixture name.  (when mixing weight is 0.450124, it truncates 0.45012, hence the 10x)
+        matlab_round = lambda x, y: round(x , y) if abs(x) >= 1.0 else round(x, y + 1)
+        pp = lambda x: x.split('/')[-1].replace(".wav", "") if isinstance(x, str) else str(matlab_round(x, 4))
         filename = "_".join([pp(mix_df[u][idx]) for u in header]) + ".wav"
 
         if "max" in args.len_mode:
