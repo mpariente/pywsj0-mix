@@ -53,9 +53,8 @@ for cond in ["tr", "cv", "tt"]:
         sources_np = np.stack(scaled_sources, axis=0)
         mix_np = np.sum(sources_np, axis=0)
 
-        gain = np.max([1., np.max(np.abs(mix_np)), np.max(np.abs(sources_np))]) / 0.9
-        mix_np /= gain
-        sources_np /= gain
+        gain_max = np.max([1., np.max(np.abs(mix_np)), np.max(np.abs(sources_np))]) / 0.9
+        gain_min = np.max([1., np.max(np.abs(mix_np[:min_len])), np.max(np.abs(sources_np[:min_len]))]) / 0.9
 
         # Merge filenames for mixture name.  (when mixing weight is 0.450124, it truncates 0.45012, hence the 10x)
         matlab_round = lambda x, y: round(x , y) if abs(x) >= 1.0 else round(x, y + 1)
@@ -63,12 +62,12 @@ for cond in ["tr", "cv", "tt"]:
         filename = "_".join([pp(mix_df[u][idx]) for u in header]) + ".wav"
 
         if "max" in args.len_mode:
-            sf.write(max_mix_folder / filename, mix_np, samplerate=args.samplerate)
+            sf.write(max_mix_folder / filename, mix_np / gain_max, samplerate=args.samplerate)
             for s_fold, src_np in zip(max_src_folders, sources_np):
-                sf.write(s_fold / filename, src_np, samplerate=args.samplerate)
+                sf.write(s_fold / filename, src_np / gain_max, samplerate=args.samplerate)
         if "min" in args.len_mode:
-            sf.write(min_mix_folder / filename, mix_np[:min_len], samplerate=args.samplerate)
+            sf.write(min_mix_folder / filename, mix_np[:min_len] / gain_min, samplerate=args.samplerate)
             for s_fold, src_np in zip(min_src_folders, sources_np):
-                sf.write(s_fold / filename, src_np[:min_len], samplerate=args.samplerate)
+                sf.write(s_fold / filename, src_np[:min_len] / gain_min, samplerate=args.samplerate)
 
 
