@@ -31,10 +31,3 @@ for nsrc in 2 3 4 5; do
   done
 done
 ```
-
-### Note about filenames
-Filenames don't always match the original Matlab-generated names, 
-as `num2str` in Matlab displays varying amount of decimal precision. 
-For example
-- Matlab: 423o030d_0.059714_053o020f_-0.059714.wav
-- Python: 423o030d_0.05971_053o020f_-0.05971.wav
