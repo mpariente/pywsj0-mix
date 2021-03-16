@@ -4,7 +4,7 @@ The `generate_wsjmix.py` reproduces the
 2 and 3 sources (around 70dB SNR between Matlab and Python output files), 
 and also works for 4 and 5 sources, as introduced [here](https://enk100.github.io/speaker_separation).
 
-Many thanks to @Jonathan-LeRoux for providing `activlev` outputs, 
+Many thanks to [@Jonathan-LeRoux](https://github.com/Jonathan-LeRoux) for providing `activlev` outputs, 
 verifying the match and debugging the code!
 
 ## Usage
