@@ -24,6 +24,16 @@ activlev_df = pd.concat([
 activlev_dic = dict(zip(list(activlev_df.utt), list(activlev_df.alev)))
 
 
+def wavwrite_quantize(samples):
+    return np.int16(np.round((2 ** 15) * samples))
+
+def wavwrite(file, samples, sr):
+    """This is how the old Matlab function wavwrite() quantized to 16 bit.
+       We match it here to maintain parity with the original dataset"""
+    int_samples = wavwrite_quantize(samples)
+    sf.write(file, int_samples, sr, subtype="PCM_16")
+
+
 for cond in ["tr", "cv", "tt"]:
     # Output folders (wav8k-16k/min-max/tr-cv-tt/mix-src{i})
     base = Path(args.output_folder) / f"{args.n_src}speakers" / f"wav{args.samplerate // 1000}k"
@@ -53,21 +63,25 @@ for cond in ["tr", "cv", "tt"]:
         sources_np = np.stack(scaled_sources, axis=0)
         mix_np = np.sum(sources_np, axis=0)
 
-        gain_max = np.max([1., np.max(np.abs(mix_np)), np.max(np.abs(sources_np))]) / 0.9
-        gain_min = np.max([1., np.max(np.abs(mix_np[:min_len])), np.max(np.abs(sources_np[:min_len]))]) / 0.9
-
         # Merge filenames for mixture name.  (when mixing weight is 0.450124, it truncates 0.45012, hence the 10x)
         matlab_round = lambda x, y: round(x , y) if abs(x) >= 1.0 else round(x, y + 1)
-        pp = lambda x: x.split('/')[-1].replace(".wav", "") if isinstance(x, str) else str(matlab_round(x, 4))
+        pp = lambda x: x.split('/')[-1].replace(".wav", "") if isinstance(x, str) else '{:12.8g}'.format(x).strip()
         filename = "_".join([pp(mix_df[u][idx]) for u in header]) + ".wav"
 
         if "max" in args.len_mode:
-            sf.write(max_mix_folder / filename, mix_np / gain_max, samplerate=args.samplerate)
-            for s_fold, src_np in zip(max_src_folders, sources_np):
-                sf.write(s_fold / filename, src_np / gain_max, samplerate=args.samplerate)
+            gain = np.max([1., np.max(np.abs(mix_np)), np.max(np.abs(sources_np))]) / 0.9
+            mix_np_max = mix_np / gain
+            sources_np_max = sources_np / gain
+            wavwrite(max_mix_folder / filename, mix_np_max, args.samplerate)
+            for s_fold, src_np in zip(max_src_folders, sources_np_max):
+                wavwrite(s_fold / filename, src_np, args.samplerate)
         if "min" in args.len_mode:
-            sf.write(min_mix_folder / filename, mix_np[:min_len] / gain_min, samplerate=args.samplerate)
+            sources_np = sources_np[:,:min_len]
+            mix_np = mix_np[:min_len]
+            gain = np.max([1., np.max(np.abs(mix_np)), np.max(np.abs(sources_np))]) / 0.9
+            mix_np /= gain
+            sources_np /= gain
+            wavwrite(min_mix_folder / filename, mix_np[:min_len], args.samplerate)
             for s_fold, src_np in zip(min_src_folders, sources_np):
-                sf.write(s_fold / filename, src_np[:min_len] / gain_min, samplerate=args.samplerate)
-
+                wavwrite(s_fold / filename, src_np[:min_len], args.samplerate)
 
