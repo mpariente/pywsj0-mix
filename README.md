@@ -1,4 +1,12 @@
-# wsj0-mix generation scripts, in Python.
+# wsj0-mix generation scripts, in Python
+The `generate_wsjmix.py` reproduces the 
+[original Matlab generation scripts](https://www.merl.com/demos/deep-clustering/) for 
+2 and 3 sources (around 70dB SNR between Matlab and Python output files), 
+and also works for 4 and 5 sources, as introduced [here](https://enk100.github.io/speaker_separation).
+
+Many thanks to @Jonathan-LeRoux for providing `activlev` outputs, 
+verifying the match and debugging the code!
+
 ## Usage
 To generate wsj0-mix data, run:
 ```bash
@@ -22,4 +30,11 @@ for nsrc in 2 3 4 5; do
     python generate_wsjmix.py -p wsj0_path -o output_path -n $nsrc -sr $sr
   done
 done
-``` 
+```
+
+### Note about filenames
+Filenames don't always match the original Matlab-generated names, 
+as `num2str` in Matlab displays varying amount of decimal precision. 
+For example
+- Matlab: 423o030d_0.059714_053o020f_-0.059714.wav
+- Python: 423o030d_0.05971_053o020f_-0.05971.wav

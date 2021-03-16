@@ -1,4 +1,5 @@
 from pathlib import Path
+import glob
 import pandas as pd
 import soundfile as sf
 import numpy as np
@@ -17,8 +18,8 @@ args = parser.parse_args()
 
 # Read activlev file. Build {utt_id: activlev} dict
 activlev_df = pd.concat([
-    pd.read_csv(f"metadata/activlev/activlev_{cond}.txt", delimiter=" ", names=["utt", "alev"], index_col=False)
-    for cond in ["tr", "cv", "tt"]
+    pd.read_csv(txt_f, delimiter=" ", names=["utt", "alev"], index_col=False)
+    for txt_f in glob.glob("./metadata/activlev/*txt")
 ])
 activlev_dic = dict(zip(list(activlev_df.utt), list(activlev_df.alev)))
 
@@ -30,9 +31,8 @@ def wavwrite(file, samples, sr):
     """This is how the old Matlab function wavwrite() quantized to 16 bit.
        We match it here to maintain parity with the original dataset"""
     int_samples = wavwrite_quantize(samples)
-    sf.write(file, int_samples, sr, subtype='PCM_16')
+    sf.write(file, int_samples, sr, subtype="PCM_16")
 
-                
 
 for cond in ["tr", "cv", "tt"]:
     # Output folders (wav8k-16k/min-max/tr-cv-tt/mix-src{i})
