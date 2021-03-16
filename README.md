@@ -8,7 +8,7 @@ Many thanks to [@Jonathan-LeRoux](https://github.com/Jonathan-LeRoux) for provid
 verifying the match and debugging the code!
 
 ## Usage
-To generate wsj0-mix data, run:
+To generate wsj0-mix data, run (after `git clone pywsj0-mix && pywsj0-mix`):
 ```bash
 python generate_wsjmix.py -p wsj0_path -o output_path -n n_sources -sr sr
 ```
