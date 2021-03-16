@@ -1,3 +1,4 @@
+
 import soundfile as sf
 from tqdm import tqdm
 import os
@@ -32,9 +33,12 @@ for mwp in tqdm(matlab_wav):
     #     assert_allclose(x1, x2, atol=5 * MIN_PREC)
     # except:
     # print("Didn't pass", snr_fn(x1, x2))
-    snr = snr_fn(x1, x2)
-    if snr < 80:
-        print("SNR (dB) : ", snr )
+    if not np.allclose(x1, x2):
+        max_e = np.max(np.abs(x1 - x2))
+        print('File {} failing with max err {}'.format(mwp, max_e))
+        snr = snr_fn(x1, x2)
+        if snr < 80:
+            print("SNR (dB) for {} : {}".format(mwp, snr))
 
 
 
