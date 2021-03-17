@@ -23,7 +23,7 @@ Default `./wsj0-mix`
 
 - `sr` is the sampling frequency. Default 8000.
 
-To generate all the possible versions of wsj0-mix, run
+To generate all the possible versions of wsj0-mix (around 330Go), run
 ```bash
 for nsrc in 2 3 4 5; do
   for sr in 8000 16000; do
